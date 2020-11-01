@@ -1,21 +1,40 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
-import products from '../../mocks/products.json';
+import { APIGatewayProxyHandler } from 'aws-lambda';
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
-  const { productId } = event.pathParameters;
-  const product = products.find(item => item.id === productId);
+import getCors from '../../utils/getCors';
+import { getById } from '../../services/productService';
 
-  if (!product) {
+export const handler: APIGatewayProxyHandler = async (event) => {
+  const headers = getCors();
+
+  try {
+    const { productId } = event.pathParameters;
+    const product = await getById(productId);
+
+    if (!product) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          message: `Product with id: ${productId} is not found`,
+        }),
+      }
+    }
+
     return {
-      statusCode: 404,
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(product),
+    };
+  } catch (error) {
+    console.log('Error execution for getting product by id', error);
+
+    return {
+      statusCode: 500,
+      headers,
       body: JSON.stringify({
-        message: `Product with id: ${productId} is not found`,
+        message: 'Internal Server Error',
       }),
     }
   }
+}
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(product),
-  };
-};

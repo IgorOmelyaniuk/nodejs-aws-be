@@ -1,15 +1,21 @@
-import { Context} from 'aws-lambda';
+import { Context } from 'aws-lambda';
 import { handler } from './index';
+import { getById } from '../../services/productService';
+import getCors from '../../utils/getCors';
 
-const products = require('../../mocks/products.json');
+jest.mock('../../services/productService', () => ({
+  getById: jest.fn(),
+}));
 
-// jest.mock('../../mocks/products.json', () => ([
-//   { "id": "1", title: "Product 1" },
-// ]));
+const headers = getCors();
 
 describe('getProductsById handler', () => {
   const context = {} as Context;
   const callback = jest.fn();
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  })
 
   it('should return product for provided id', async () => {
     const event = {
@@ -17,10 +23,14 @@ describe('getProductsById handler', () => {
         productId: '1',
       },
     } as any;
+    const product = { id: '1', title: 'Product 1' };
+    (getById as jest.Mock).mockResolvedValue(product);
     const result = await handler(event, context, callback);
+
     expect(result).toEqual({
       statusCode: 200,
-      body: JSON.stringify(products[0]),
+      headers,
+      body: JSON.stringify(product),
     });
   });
 
@@ -31,11 +41,32 @@ describe('getProductsById handler', () => {
         productId,
       },
     } as any;
+    (getById as jest.Mock).mockResolvedValue(null);
     const result = await handler(event, context, callback);
+
     expect(result).toEqual({
-      statusCode: 404,
+      statusCode: 400,
+      headers,
       body: JSON.stringify({
         message: `Product with id: ${productId} is not found`,
+      }),
+    });
+  });
+
+  it('should return response for execution error', async () => {
+    const event = {
+      pathParameters: {
+        productId: '1',
+      },
+    } as any;
+    (getById as jest.Mock).mockRejectedValue({});
+    const result = await handler(event, context, callback);
+
+    expect(result).toEqual({
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        message: 'Internal Server Error',
       }),
     });
   });
