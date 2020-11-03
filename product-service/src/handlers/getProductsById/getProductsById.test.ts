@@ -45,7 +45,7 @@ describe('getProductsById handler', () => {
     const result = await handler(event, context, callback);
 
     expect(result).toEqual({
-      statusCode: 400,
+      statusCode: 404,
       headers,
       body: JSON.stringify({
         message: `Product with id: ${productId} is not found`,

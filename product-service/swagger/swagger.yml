@@ -48,7 +48,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-        400:
+        404:
           description: 'Product is not found by id'
           content:
             application/json:
