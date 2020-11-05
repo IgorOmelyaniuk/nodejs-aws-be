@@ -1,0 +1,102 @@
+openapi: 3.0.0
+info:
+  title: 'Products Service'
+  description: 'Products Service API contracts'
+  version: '1.0.0'
+
+paths:
+  /products:
+    get:
+      summary: 'Get list of all products'
+      responses:
+        200:
+          description: 'Response with list of all products'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        500:
+          description: 'Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'Internal server error'
+  /products/{productId}:
+    get:
+      tags:
+      - product
+      summary: 'Get single product by id'
+      parameters:
+        - name: productId
+          in: path
+          description: product ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 7567ec4b-b10c-48c5-9345-fc73c48a80aa
+      responses:
+        200
+          description: 'Response with single product'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: 'Product is not found by id'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'Product is not found with some id'
+        500:
+          description: 'Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'Internal server error'
+
+components:
+  schemas:
+    Product:
+      required:
+      - count
+      - description
+      - id
+      - image
+      - price
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 7567ec4b-b10c-48c5-9345-fc73c48a80aa
+        title:
+          type: string
+          example: Talisker 10 Year Old
+        description:
+          type: string
+          example: Deep and stormy like the ocean
+        price:
+          type: number
+          example: 66
+        count:
+          type: number
+          example: 3
+        image:
+          type: string
+          example: some url to image
