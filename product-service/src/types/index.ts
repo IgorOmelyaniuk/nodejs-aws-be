@@ -5,3 +5,7 @@ export interface Product {
   price: number,
   image: string;
 };
+
+export interface ProductData extends Omit<Product, 'id'> {
+  count: number;
+};
