@@ -149,8 +149,6 @@ components:
     ProductData:
       required:
       - count
-      - description
-      - image
       - price
       - title
       type: object

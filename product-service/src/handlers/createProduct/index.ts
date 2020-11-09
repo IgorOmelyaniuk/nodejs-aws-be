@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { StatusCodes } from 'http-status-codes';
 
+import { ProductSchema } from '../../types';
 import getCors from '../../utils/getCors';
 import sendResponse from '../../utils/sendResponse';
 import { ERROR_MESSAGES } from '../../utils/getError';
@@ -13,13 +14,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   try {
     const productData = event?.body && JSON.parse(event.body);
 
-    if (!(productData
-      && productData.title
-      && productData.description
-      && productData.image
-      && productData.price
-      && productData.count
-    )) {
+    try {
+      await ProductSchema.validate(productData);
+    } catch (error) {
       return sendResponse(
         StatusCodes.BAD_REQUEST,
         { message: ERROR_MESSAGES.PRODUCT_NOT_VALID },

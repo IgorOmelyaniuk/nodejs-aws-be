@@ -12,7 +12,7 @@ const headers = getCors();
 const productId = 'd2e52642-f0d0-4d86-9f89-b8284d18eaa9';
 const invalidProductData = {
   description: 'description',
-  image: 'image',
+  image: 'http://image.com',
   price: 50,
   count: 2
 }
