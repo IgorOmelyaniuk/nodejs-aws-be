@@ -11,7 +11,7 @@ const serverlessConfiguration: Serverless = {
       includeModules: true
     }
   },
-  plugins: ['serverless-webpack'],
+  plugins: ['serverless-webpack', 'serverless-dotenv-plugin'],
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
@@ -22,6 +22,11 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      DB_HOST: process.env.DB_HOST,
+      DB_PORT: process.env.DB_PORT,
+      DB_DATABASE: process.env.DB_DATABASE,
+      DB_USERNAME: process.env.DB_USERNAME,
+      DB_PASSWORD: process.env.DB_PASSWORD,
     },
   },
   functions: {
@@ -44,6 +49,18 @@ const serverlessConfiguration: Serverless = {
           http: {
             method: 'get',
             path: 'products/{productId}',
+            cors: true
+          }
+        }
+      ]
+    },
+    createProduct: {
+      handler: 'src/handlers/createProduct/index.handler',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'products',
             cors: true
           }
         }

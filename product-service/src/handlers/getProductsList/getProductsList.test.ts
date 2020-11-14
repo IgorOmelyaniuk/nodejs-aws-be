@@ -2,6 +2,7 @@ import { Context } from 'aws-lambda';
 import { handler } from './index';
 import { getAll } from '../../services/productService';
 import getCors from '../../utils/getCors';
+import { ERROR_MESSAGES } from '../../utils/getError';
 
 jest.mock('../../services/productService', () => ({
   getAll: jest.fn(),
@@ -38,7 +39,7 @@ describe('getProductsList handler', () => {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        message: 'Internal Server Error',
+        message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR
       }),
     });
   });

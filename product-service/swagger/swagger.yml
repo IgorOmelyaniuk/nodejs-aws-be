@@ -27,6 +27,42 @@ paths:
                   message:
                     type: 'string'
                     example: 'Internal server error'
+    post:
+      summary: 'Create new product'
+      requestBody:
+        description: Add new product request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductData'
+      responses:
+        201:
+          description: 'Response with new product'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        400:
+          description: 'Passed product data is invalid'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'Product data is not valid'
+        500
+          description: 'Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'Internal server error'
   /products/{productId}:
     get:
       tags:
@@ -48,6 +84,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+        400:
+          description: 'Product id is not valid'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'Product id is not valid'
         404:
           description: 'Product is not found by id'
           content:
@@ -85,6 +131,28 @@ components:
           type: string
           format: uuid
           example: 7567ec4b-b10c-48c5-9345-fc73c48a80aa
+        title:
+          type: string
+          example: Talisker 10 Year Old
+        description:
+          type: string
+          example: Deep and stormy like the ocean
+        price:
+          type: number
+          example: 66
+        count:
+          type: number
+          example: 3
+        image:
+          type: string
+          example: some url to image
+    ProductData:
+      required:
+      - count
+      - price
+      - title
+      type: object
+      properties:
         title:
           type: string
           example: Talisker 10 Year Old
