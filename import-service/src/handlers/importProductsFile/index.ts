@@ -23,6 +23,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const { BUCKET_NAME, BUCKET_REGION } = process.env;
     const catalogName = `uploaded/${name}`;
     const s3 = new S3({ region: BUCKET_REGION });
+
     const params = {
       Bucket: BUCKET_NAME,
       Key: catalogName,
@@ -30,16 +31,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       ContentType: 'text/csv',
     };
 
-    const signedUrl = await new Promise((resolve, reject) => {
-      s3.getSignedUrl('putObject', params, (error, url) => {
-        if (error) {
-          return reject(error);
-        }
-
-        return resolve(url)
-      })
-    })
-
+    const signedUrl = await s3.getSignedUrlPromise('putObject', params);
     console.log(`Signed url: ${signedUrl}`);
 
     return {
