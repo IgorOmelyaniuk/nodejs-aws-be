@@ -2,9 +2,9 @@ import AWSMock from "aws-sdk-mock";
 import { Context } from 'aws-lambda';
 import { StatusCodes } from 'http-status-codes';
 
-import { handler } from '../index';
-import getCors from '../../../utils/getCors';
-import { ERROR_MESSAGES } from '../../../utils/getError';
+import { handler } from './index';
+import getCors from '../../utils/getCors';
+import { ERROR_MESSAGES } from '../../utils/getError';
 
 const headers = getCors();
 
