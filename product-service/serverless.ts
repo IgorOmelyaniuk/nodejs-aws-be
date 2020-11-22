@@ -6,8 +6,8 @@ const serverlessConfiguration: Serverless = {
   },
   frameworkVersion: '2',
   custom: {
-    multipleSnsEmail: 'igoromelyaniuk@gmail.com',
-    snsEmail: 'iamelyaniuk@gmail.com',
+    multipleSnsEmail: 'iamelyaniuk@gmail.com',
+    snsEmail: 'igoromelyaniuk@gmail.com',
     webpack: {
       webpackConfig: './webpack.config.js',
       includeModules: true
@@ -64,23 +64,23 @@ const serverlessConfiguration: Serverless = {
           TopicName: 'createProductTopic',
         }
       },
-      MultipleSNSSubscription: {
-        Type: 'AWS::SNS::Subscription',
-        Properties: {
-          Endpoint: '${self:custom.multipleSnsEmail}',
-          Protocol: 'email',
-          FilterPolicy: { productsNumber: [{"numeric": [">=", 2]}] },
-          TopicArn: {
-            Ref: 'SNSTopic'
-          },
-        },
-      },
       SNSSubscription: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
           Endpoint: '${self:custom.snsEmail}',
           Protocol: 'email',
           FilterPolicy: { productsNumber: [{"numeric": ["=", 1]}] },
+          TopicArn: {
+            Ref: 'SNSTopic'
+          },
+        },
+      },
+      MultipleSNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${self:custom.multipleSnsEmail}',
+          Protocol: 'email',
+          FilterPolicy: { productsNumber: [{"numeric": [">=", 2]}] },
           TopicArn: {
             Ref: 'SNSTopic'
           },
