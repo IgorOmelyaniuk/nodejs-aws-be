@@ -29,12 +29,12 @@ const serverlessConfiguration: Serverless = {
       {
         Effect: 'Allow',
         Action: 's3:ListBucket',
-        Resource: "arn:aws:s3:::amelyaniuk-store-app-storage"
+        Resource: 'arn:aws:s3:::${env:BUCKET_NAME}'
       },
       {
         Effect: 'Allow',
         Action: 's3:*',
-        Resource: "arn:aws:s3:::amelyaniuk-store-app-storage/*",
+        Resource: 'arn:aws:s3:::${env:BUCKET_NAME}/*',
       }
     ]
   },
@@ -63,7 +63,7 @@ const serverlessConfiguration: Serverless = {
       events: [
         {
           s3: {
-            bucket: 'amelyaniuk-store-app-storage',
+            bucket: '${env:BUCKET_NAME}',
             event: 's3:ObjectCreated:*',
             rules: [{
               prefix: 'uploaded/',
