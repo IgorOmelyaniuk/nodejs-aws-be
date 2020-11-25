@@ -24,6 +24,7 @@ const serverlessConfiguration: Serverless = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       BUCKET_REGION: process.env.BUCKET_REGION,
       BUCKET_NAME: process.env.BUCKET_NAME,
+      SQS_URL: '${cf:product-service-${self:provider.stage}.SQSQueueUrl}',
     },
     iamRoleStatements: [
       {
@@ -35,7 +36,12 @@ const serverlessConfiguration: Serverless = {
         Effect: 'Allow',
         Action: 's3:*',
         Resource: 'arn:aws:s3:::${env:BUCKET_NAME}/*',
-      }
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: ['${cf:product-service-${self:provider.stage}.SQSQueueArn}']
+      },
     ]
   },
   functions: {

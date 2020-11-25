@@ -1,4 +1,4 @@
-import { S3 } from 'aws-sdk';
+import { S3, SQS } from 'aws-sdk';
 import csv from 'csv-parser'; 
 import { StatusCodes } from 'http-status-codes';
 
@@ -10,6 +10,7 @@ export const handler = async (event) => {
   try {
     const { BUCKET_NAME, BUCKET_REGION } = process.env;
     const s3 = new S3({ region: BUCKET_REGION });
+    const sqs = new SQS();
 
     for (const record of event.Records) {
       const originalKey = record.s3.object.key;
@@ -18,6 +19,23 @@ export const handler = async (event) => {
       const params = { Bucket: BUCKET_NAME, Key: originalKey };
 
       const data = await readStream(s3.getObject(params).createReadStream(), csv);
+
+      data.forEach(product => {
+        sqs.sendMessage(
+          {
+            QueueUrl: process.env.SQS_URL,
+            MessageBody: JSON.stringify(product),
+          },
+          (error) => {
+            if (error) {
+              console.log(`Error for sending message: ${JSON.stringify(error)}`);
+            } else {
+              console.log(`Message was sending: ${JSON.stringify(product)}`);
+            }
+          }
+        )
+      });
+
       console.log(`Data for ${originalKey}: ${data}`);
 
       console.log(`Copying from: ${copySource}`);
