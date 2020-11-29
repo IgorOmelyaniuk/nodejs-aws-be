@@ -21,7 +21,14 @@ export const handler = async (
 
   try {
     const { authorizationToken, methodArn } = event;
-    const encodedCredentials = authorizationToken.split(' ')[1];
+    const [tokenType, encodedCredentials] = authorizationToken.split(' ');
+
+    console.log(`Token type: ${tokenType}`);
+
+    if (tokenType !== 'Basic') {
+      callback('Unauthorized');
+    }
+
     const [username, password] = Buffer.from(encodedCredentials, 'base64')
       .toString('utf-8')
       .split(':');
