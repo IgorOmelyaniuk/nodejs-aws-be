@@ -1,5 +1,10 @@
 import type { Serverless } from 'serverless/aws';
 
+const CORSHeaders = {
+  'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+  'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+};
+
 const serverlessConfiguration: Serverless = {
   service: {
     name: 'import-service',
@@ -9,7 +14,7 @@ const serverlessConfiguration: Serverless = {
     webpack: {
       webpackConfig: './webpack.config.js',
       includeModules: true
-    }
+    },
   },
   plugins: ['serverless-webpack', 'serverless-dotenv-plugin'],
   provider: {
@@ -44,6 +49,30 @@ const serverlessConfiguration: Serverless = {
       },
     ]
   },
+  resources: {
+    Resources: {
+      GatewayResponseAccessDenied: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi'
+          },
+          ResponseType: 'ACCESS_DENIED',
+          ResponseParameters: CORSHeaders,
+        }
+      }, 
+      GatewayResponseUnauthorized: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi'
+          },
+          ResponseType: 'UNAUTHORIZED',
+          ResponseParameters: CORSHeaders,
+        }
+      }
+    }
+  },
   functions: {
     importProductsFile: {
       handler: 'src/handlers/importProductsFile/index.handler',
@@ -59,7 +88,14 @@ const serverlessConfiguration: Serverless = {
                   name: true
                 }
               }
-            }
+            },
+            authorizer: {
+              name: 'tokenAuthorizer',
+              arn: '${cf:authorization-service-${self:provider.stage}.basicAuthorizerArn}',
+              resultTtlInSeconds: 0,
+              identitySource: 'method.request.header.Authorization',
+              type: 'token',
+            },
           }
         }
       ]
