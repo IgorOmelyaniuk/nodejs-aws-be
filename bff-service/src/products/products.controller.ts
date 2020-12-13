@@ -1,6 +1,6 @@
-import { All, Controller, Get, Req, Res, UseInterceptors, CacheInterceptor, HttpStatus } from '@nestjs/common';
+import { All, Controller, Get, Req, UseInterceptors, CacheInterceptor, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { ProxyService } from 'src/proxy/proxy.service';
 
 @Controller('product')
@@ -9,21 +9,21 @@ export class ProductsController {
 
   @Get('products')
   @UseInterceptors(CacheInterceptor)
-  handleProducts(@Req() request: Request, @Res() response: Response): any {
+  handleProducts(@Req() request: Request): any {
     const recipientUrl = this.configService.get<string>('product');
     const url = `${recipientUrl}/products`;
-    return this.productsService.handleRequest(url, request, response);
+    return this.productsService.handleRequest(url, request);
   }
 
   @All()
-  handleRequest(@Req() request: Request, @Res() response: Response): any {
+  handleRequest(@Req() request: Request): any {
     const urlParams = request.originalUrl.slice(1).split('/');
     const recipient = urlParams[0];
     const recipientUrl = this.configService.get<string>(recipient);
 
     if (recipientUrl) {
       const url = `${recipientUrl}/${urlParams.slice(1).join('/')}`;
-      return this.productsService.handleRequest(url, request, response);
+      return this.productsService.handleRequest(url, request);
     }
 
     return {
