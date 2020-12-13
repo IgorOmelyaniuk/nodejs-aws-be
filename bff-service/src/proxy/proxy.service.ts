@@ -1,7 +1,7 @@
 import { Injectable, HttpService, HttpException } from '@nestjs/common';
 import { map, catchError } from 'rxjs/operators';
-import { AxiosResponse, AxiosRequestConfig, Method } from 'axios';
-import { Request } from 'express';
+import { AxiosRequestConfig, Method } from 'axios';
+import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 
 import getAllowedHeaders from './utils/getAllowedHeaders';
@@ -10,7 +10,7 @@ import getAllowedHeaders from './utils/getAllowedHeaders';
 export class ProxyService {
   constructor (private httpService: HttpService) {}
 
-  handleRequest(url: string, request: Request): Observable<AxiosResponse<any>> {
+  handleRequest(url: string, request: Request, response: Response): Observable<any> {
     const { method, params, headers, body } = request;
 
     const config: AxiosRequestConfig = {
@@ -24,7 +24,12 @@ export class ProxyService {
     return this.httpService
       .request(config)
       .pipe(
-        map(response => response.data),
+        map(res => {
+          return response
+            .set({ ...res.headers })
+            .status(res.status)
+            .json(res.data);
+        }),
         catchError(error => {
           throw new HttpException(error.response.data, error.response.status);
         })
