@@ -11,9 +11,7 @@
   "scripts": {
     "build": "nest build",
     "start": "nest start",
-    "start:eb": "node dist/main",
-    "eb:deploy": "cross-env npm=cache bash ./scripts/build-and-deploy.sh",
-    "eb:install:deploy": "bash ./scripts/build-and-deploy.sh"
+    "start:eb": "node dist/main"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",
